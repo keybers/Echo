@@ -67,11 +67,11 @@ namespace EchoServer
                         }
                     }
                 }
-                catch(SocketException se)
+                catch (SocketException se)
                 {
-                    Console.WriteLine("error");
+                    Console.WriteLine("error" + se.ToString());
                 }
-                
+
             }
         }
         /// <summary>
@@ -83,20 +83,21 @@ namespace EchoServer
         {
             ClientState clientState = clients[clientfd];
 
-            int count = 0;
+            int count;
             try
             {
                 count = clientfd.Receive(clientState.readBuff);
-            }catch(SocketException se)//接收故障:不是未收到,紧急调停
+            }
+            catch (SocketException se)//接收故障:不是未收到,紧急调停
             {
                 clientfd.Close();
                 clients.Remove(clientfd);
-                Console.WriteLine("Socket Close:Reception failure");
+                Console.WriteLine("Socket Close:Reception failure:" + se.ToString());
                 return false;
             }
-            
+
             //客户端关闭
-            if(count == 0)
+            if (count == 0)
             {
                 clientfd.Close();
                 clients.Remove(clientfd);
@@ -105,20 +106,17 @@ namespace EchoServer
             }
 
             //广播
-            string recvStr = Encoding.UTF8.GetString(clientState.readBuff, 0, count);
+            string recvStr = Encoding.UTF8.GetString(clientState.readBuff, 2, count - 2);
             Console.WriteLine("[Server] receive:" + recvStr);
 
-            string sendStr = clientfd.RemoteEndPoint.ToString() + ":" + recvStr;
-
-            byte[] sendByte = Encoding.UTF8.GetBytes(sendStr, 0, sendStr.Length);
-
-            foreach(ClientState cs in clients.Values)
+            byte[] sendByte = new byte[count];
+            Array.Copy(clientState.readBuff, 0, sendByte, 0, count);
+            foreach (ClientState cs in clients.Values)
             {
                 cs.socket.Send(sendByte);
             }
-
             return true;
-            
+
         }
         /// <summary>
         /// 用来解决存在于缓存的中需要处理监听的特殊事件，所以用同步处理,Accept过程
@@ -147,8 +145,8 @@ namespace EchoServer
                 //readBuffer还没有东西所以莫得
 
                 clients.Add(clientfd, clientState);
-                
-                clientfd.BeginReceive(clientState.readBuff, 0, 1024, 0, ReceiveCallBack,clientState);
+
+                clientfd.BeginReceive(clientState.readBuff, 0, 1024, 0, ReceiveCallBack, clientState);
                 listenfd.BeginAccept(AcceptCallBack, listenfd);
 
             }
@@ -164,12 +162,12 @@ namespace EchoServer
         {
             try
             {
-                ClientState clientState = (ClientState) ar.AsyncState;
+                ClientState clientState = (ClientState)ar.AsyncState;
                 Socket clientfd = clientState.socket;
                 int count = clientfd.EndReceive(ar);
 
                 //client关闭
-                if(count == 0)
+                if (count == 0)
                 {
                     clientfd.Close();
                     clients.Remove(clientfd);
@@ -182,7 +180,7 @@ namespace EchoServer
                 byte[] sendByte = Encoding.UTF8.GetBytes(sendStr);
 
                 //对所有连接的客户端发送消息
-                foreach(ClientState c in clients.Values)
+                foreach (ClientState c in clients.Values)
                 {
                     c.socket.Send(sendByte);
                 }
@@ -198,3 +196,4 @@ namespace EchoServer
         }
     }
 }
+

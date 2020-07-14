@@ -1008,6 +1008,7 @@ GameObject:
   - component: {fileID: 937946658}
   - component: {fileID: 937946657}
   - component: {fileID: 937946661}
+  - component: {fileID: 937946662}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1111,8 +1112,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputField: {fileID: 520693514}
-  cancellationButton: {fileID: 0}
   text: {fileID: 210779663}
+--- !u!114 &937946662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937946656}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ec3e3d35d49bd4a9b3e73ca94a11a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
